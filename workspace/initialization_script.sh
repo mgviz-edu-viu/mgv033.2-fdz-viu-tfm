@@ -42,6 +42,7 @@ mkdir -p \
   \
   scripts/preprocessing \
   scripts/analysis \
+  scripts/analysis/workflow \
   scripts/visualization \
   scripts/scratch \
   \
@@ -69,6 +70,7 @@ touch \
   \
   scripts/preprocessing/README.md \
   scripts/analysis/README.md \
+  scripts/analysis/workflow/README.md \
   scripts/visualization/README.md \
   scripts/scratch/README.md \
   \
