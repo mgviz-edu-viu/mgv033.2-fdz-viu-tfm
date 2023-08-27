@@ -1,7 +1,15 @@
+# personalized ignores
+_scratch
+## anything starting with 4 _ is ignored
+____*
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
 *$py.class
+
+# MAC
+.DS_Store
 
 # C extensions
 *.so
@@ -51,6 +59,12 @@ coverage.xml
 .pytest_cache/
 cover/
 
+# snakemake
+.snakemake
+
+# R
+.Renviron
+
 # Translations
 *.mo
 *.pot
@@ -92,14 +106,14 @@ ipython_config.py
 #   However, in case of collaboration, if having platform-specific dependencies or dependencies
 #   having no cross-platform support, pipenv may install dependencies that don't work, or not
 #   install all needed dependencies.
-#Pipfile.lock
+Pipfile.lock
 
 # poetry
 #   Similar to Pipfile.lock, it is generally recommended to include poetry.lock in version control.
 #   This is especially recommended for binary packages to ensure reproducibility, and is more
 #   commonly ignored for libraries.
 #   https://python-poetry.org/docs/basic-usage/#commit-your-poetrylock-file-to-version-control
-#poetry.lock
+poetry.lock
 
 # pdm
 #   Similar to Pipfile.lock, it is generally recommended to include pdm.lock in version control.
@@ -157,4 +171,31 @@ cython_debug/
 #  be found at https://github.com/github/gitignore/blob/main/Global/JetBrains.gitignore
 #  and can be added to the global gitignore or merged into this file.  For a more nuclear
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
-#.idea/
+# .idea/
+
+# IDE specific
+.vscode/
+*.vscode-test/
+.idea/
+
+*.swp
+*~
+*.bak
+*.tmp
+# Sublime Text-specific
+*.sublime-workspace
+.history/
+
+# Emacs
+# -*- mode: gitignore; -*-
+.emacs.desktop
+.emacs.desktop.lock
+
+.cache/
+.ccls-cache/
+
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
