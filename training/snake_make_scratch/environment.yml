@@ -1,0 +1,8 @@
+name: scratch_tool
+channels:
+  - conda-forge
+  - base
+  - bioconda
+dependencies:
+  - wget=1.20.3
+  - snakemake=7.32.4
