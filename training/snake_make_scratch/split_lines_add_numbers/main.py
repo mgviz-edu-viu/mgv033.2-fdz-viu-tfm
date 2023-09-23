@@ -1,4 +1,6 @@
 from faker import Faker
+import sys, os, glob, re
+
 # Faker.seed(1)
 fake = Faker()
 
@@ -16,9 +18,21 @@ def generate_text():
     f.close()
     print("Generated successfully")
     
+
+def split_file_line():
+    with open("generated_text.txt", "r") as file:
+        for index,line in enumerate(file):
+            f = open(f"split_text_{index}.txt","w")
+            line_cap = f"{index}-{line.strip().upper()}"
+            f.write(line_cap)
+            f.close()
+    print("Generated files successfully")
+
+
 if __name__ == "__main__":
     function_map = {
         "generate_text": generate_text,
+        "split_file": split_file_line,
     }
     
     func_name = sys.argv[1]
