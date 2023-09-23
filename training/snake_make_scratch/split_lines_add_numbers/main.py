@@ -28,11 +28,28 @@ def split_file_line():
             f.close()
     print("Generated files successfully")
 
+def join_files():
+    pattern = r"\d+\.txt"
+    regex = re.compile(pattern)
+    # list all files in the current directory
+    all_files = os.listdir()
+    matching_files = [file for file in all_files if regex.search(file)]
+    file_contents = ""
+    for file_path in sorted(matching_files):
+        try:
+            with open(file_path,"r") as file:
+                file_contents+= f"{file.read()}\n" 
+        except FileNotFoundError:
+            print(f"File {file_path} not found.\n")
+    f = open("joined_text.txt","w")
+    f.write(file_contents)
+    f.close()
 
 if __name__ == "__main__":
     function_map = {
         "generate_text": generate_text,
         "split_file": split_file_line,
+        "join_files": join_files,
     }
     
     func_name = sys.argv[1]
