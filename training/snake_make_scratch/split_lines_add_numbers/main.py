@@ -44,12 +44,26 @@ def join_files():
     f = open("joined_text.txt","w")
     f.write(file_contents)
     f.close()
+    
+def clean_files():
+    all_files = os.listdir()
+    keyword = "text"
+    matching_files = [file for file in all_files if keyword in file]
+    print(f"file to remove: {sorted(matching_files)}")
+    # Loop through the filenames and remove files containing the keyword
+    for file_path in matching_files:
+            try:
+                os.remove(file_path)
+                print(f"File {file_path} has been removed.")
+            except FileNotFoundError:
+                print(f"File {file_path} not found.")
 
 if __name__ == "__main__":
     function_map = {
         "generate_text": generate_text,
         "split_file": split_file_line,
         "join_files": join_files,
+        "clean_files": clean_files        
     }
     
     func_name = sys.argv[1]
