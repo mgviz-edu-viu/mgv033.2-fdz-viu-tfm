@@ -4,6 +4,6 @@ channels:
   - base
   - bioconda
 dependencies:
-  - wget=1.20.3
   - snakemake=7.32.4
   - Faker=19.6.2
+  - poetry=1.6.1 
