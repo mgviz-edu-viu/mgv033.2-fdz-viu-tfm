@@ -1,0 +1,54 @@
+
+rule targets:
+    input:
+        "data/generated_text.txt",
+        expand("data/split_text_{index}.txt", index=range(10)),
+        "data/joined_text.txt",
+
+
+rule generate_text:
+    input:
+        script="scripts/main.py",
+    params:
+        func="generate_text",
+    output:
+        "data/generated_text.txt",
+    shell:
+        """
+        python {input.script} {params.func}
+        """
+
+
+rule split_file_line:
+    input:
+        script="scripts/main.py",
+        archive="data/generated_text.txt",
+    params:
+        func="split_file",
+    output:
+        expand("data/split_text_{index}.txt", index=range(10)),
+    shell:
+        """
+        python {input.script} {params.func}
+        """
+
+
+rule join_files:
+    input:
+        script="scripts/main.py",
+        archive=expand("data/split_text_{index}.txt", index=range(10)),
+    params:
+        func="join_files",
+    output:
+        "data/joined_text.txt",
+    shell:
+        """
+        python {input.script} {params.func}
+        """
+
+
+# rule targets:
+#     input:
+#         "data/generated_text.txt",
+#         expand("data/split_text_{index}.txt", index=range(10)),
+#         "data/joined_text.txt",

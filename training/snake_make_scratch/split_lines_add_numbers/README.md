@@ -7,4 +7,13 @@ steps:
 * transform the files converting the text to capital letters and add at the beginning of the file the Number of the original line
   * 1- LOREN IPSUM....
 * Join all the files into a final file
-* 
+
+## How to install Snakemake
+
+Comming soon
+
+## How to run this workflow
+
+```
+snakemake -c 1
+```
