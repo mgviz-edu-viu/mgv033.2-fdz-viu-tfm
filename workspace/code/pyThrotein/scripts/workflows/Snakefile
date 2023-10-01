@@ -11,17 +11,19 @@ software_base_dir: config.get("software_base_dir", "/path/to/software_directory"
 temp_dir: config.get("temp_dir", "/path/to/temporary_directory")
 workflow_dir: config.get("workflow_dir", "/path/to/workflow_directory")
 
+
 # Define the Excel file path from the configuration
-excel_file: config["excel_file"]
+# excel_file: config["excel_file"]
+# metadata_json: f"{config['data_dir']}/processed_data/metadata.json"
 
 # Rule 1: Read Excel Metadata and Create JSON
 rule extract_metadata:
     input:
-        excel_file
+        config["excel_file"]
     output:
-        "metadata.json"
+        f"{config['data_dir']}/processed_data/metadata.json"
     shell:
         """
         # Command to read Excel and create JSON
-        python extract_pyThrotein_metadata.py -fi {input} -fo {output}
+        python extract_pyThrotein_metadata.py -i {input} -o {output}
         """

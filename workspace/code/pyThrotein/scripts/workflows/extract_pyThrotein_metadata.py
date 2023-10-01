@@ -4,14 +4,22 @@ import click
 
 # Función para transformar values_limit en una lista o lista vacía
 def transform_values_limit(value):
-    if value:
-        return value.split(',')
-    else:
+    print("# [INFO] transforming value limits")
+    # this is now a try/except to being able to split the nan and also return 
+    # only a [] if empty string or nan (converted to empty string with fillna())
+    try:
+        if value is None or value == '':
+            return [] 
+        return str(value).split(',')
+    except (TypeError, AttributeError):
         return []
 
 # Función para procesar cada grupo y crear un JSON para cada uno
 def process_group(group_data):
-    group_json = group_data.to_dict(orient='records')
+    print("# [INFO]  processing group")
+    # use fillna() to avoinf to have "nan" in the json and the become a  ['nan'],
+    #  makeing it '' we can end up with a [] in the value_limits
+    group_json = group_data.fillna("").to_dict(orient='records')
     
     # Transformar values_limit en una lista o lista vacía
     for item in group_json:
@@ -25,6 +33,7 @@ def generate_json_from_excel(excel_file_path, metadata_sheet_name):
     excel_data = pd.read_excel(excel_file_path, sheet_name=metadata_sheet_name)
 
     # Agrupar los datos por el factor de purificación (table_name)
+    print("# [INFO]  grouping excel datq")
     grouped_data = excel_data.groupby('table_name')
 
     # Crear un diccionario para almacenar el JSON resultante
@@ -45,18 +54,15 @@ def save_json_to_file(json_data, file_path):
 
 @click.command()
 @click.option('-d', '--debug', is_flag=True, help='Imprimir el JSON en la consola para depuración')
-@click.argument('excel_file_path', type=click.Path(exists=True), required=True, metavar='EXCEL_FILE_PATH', 
-                callback=lambda ctx, param, value: value or None)
-@click.option('-if', '--input-file', type=click.Path(exists=True), help='Ruta al archivo Excel', metavar='EXCEL_FILE_PATH')
-@click.argument('output_file_path', type=click.Path(), required=True, metavar='OUTPUT_FILE_PATH', 
-                callback=lambda ctx, param, value: value or None)
-@click.option('-of', '--output-file', type=click.Path(), help='Ruta al archivo de salida JSON', metavar='OUTPUT_FILE_PATH')
-@click.option('--metadata-sheet-name', default='metadata', help='Nombre de la hoja de metadata')
-def main(debug, excel_file_path, input_file, output_file_path, output_file, metadata_sheet_name):
-    if not excel_file_path:
-        excel_file_path = input_file
-    if not output_file_path:
-        output_file_path = output_file
+#@click.argument('excel_file_path', type=click.Path(exists=True), metavar='EXCEL_FILE_PATH', callback=lambda ctx, param, value: value or None)
+@click.option('-i', '--input-file', type=click.Path(exists=True), help='Ruta al archivo Excel', metavar='EXCEL_FILE_PATH')
+#@click.argument('output_file_path', type=click.Path(), metavar='OUTPUT_FILE_PATH', callback=lambda ctx, param, value: value or None)
+@click.option('-o', '--output-file', type=click.Path(), help='Ruta al archivo de salida JSON', metavar='OUTPUT_FILE_PATH')
+@click.option('--metadata-sheet-name', default='Metadata', help='Nombre de la hoja de metadata')
+def main(debug, input_file, output_file, metadata_sheet_name):
+
+    excel_file_path = input_file
+    output_file_path = output_file
 
     # Verificar si se proporciona el parámetro de entrada (excel_file_path)
     if not excel_file_path:
@@ -64,6 +70,7 @@ def main(debug, excel_file_path, input_file, output_file_path, output_file, meta
         return
 
     # Generar el JSON a partir del archivo Excel
+    print("# [INFO]  generate_json_from_exce")
     result_json = generate_json_from_excel(excel_file_path, metadata_sheet_name)
 
     # Imprimir el JSON solo si se proporciona el parámetro de depuración
@@ -71,9 +78,12 @@ def main(debug, excel_file_path, input_file, output_file_path, output_file, meta
         click.echo(json.dumps(result_json, indent=4))
 
     # Verificar si se proporciona el parámetro de salida (output_file_path) y usarlo si está presente
+    print("# [INFO] saving JSON")
     if output_file_path:
         save_json_to_file(result_json, output_file_path)
         click.echo(f"JSON guardado en: {output_file_path}")
+    else:
+        print("# [INFO] the output file has not been given. No JSON file created")
 
 if __name__ == "__main__":
     main()
