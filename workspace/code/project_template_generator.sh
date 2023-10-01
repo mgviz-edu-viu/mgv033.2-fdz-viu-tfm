@@ -40,8 +40,8 @@ create_readme "$project_name/data/annotations"
 # Uncomment these lines to create module-related directories and files
 #mkdir -vp "$project_name/modules/module1/tests"
 #create_readme "$project_name/modules/module1/tests"
-#mkdir -vp "$project_name/modules/module2/tests"
-#create_readme "$project_name/modules/module2/tests"
+# mkdir -vp "$project_name/modules/module2/tests"
+# create_readme "$project_name/modules/module2/tests"
 
 # Create scripts directory and subdirectories
 mkdir -vp "$project_name/scripts/preprocessing"
