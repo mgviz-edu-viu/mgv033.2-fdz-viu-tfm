@@ -2,7 +2,7 @@ RADME code
 ===========
 
 // project
-* [ ] script to generate the project
+* [x] script to generate the project
 
 
 // scripts

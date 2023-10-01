@@ -1,0 +1,27 @@
+# Importar la biblioteca Snakemake
+import snakemake
+
+# Regla para cargar el archivo Excel y crear archivos CSV para cada paso
+rule cargar_excel_y_separar_csv:
+    input:
+        "datos/proceso_purificacion.xlsx"
+    output:
+        expand("datos/paso{paso}.csv", paso=range(1, 6))
+    script:
+        "cargar_excel_y_separar_csv.py"
+
+# Reglas para transformar y renombrar los archivos CSV
+rule transformar_csv:
+    input:
+        csv="datos/paso{paso}.csv"
+    output:
+        mod="datos/paso{paso}_mod.csv"
+    script:
+        "transformar_csv.py"
+
+# Regla para cargar todos los CSV transformados en la base de datos
+rule cargar_en_base_de_datos:
+    input:
+        expand("datos/paso{paso}_mod.csv", paso=range(1, 6))
+    script:
+        "cargar_en_base_de_datos.py"
