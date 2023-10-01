@@ -1,27 +1,27 @@
-# Importar la biblioteca Snakemake
+# Import the Snakemake library
 import snakemake
 
-# Regla para cargar el archivo Excel y crear archivos CSV para cada paso
-rule cargar_excel_y_separar_csv:
-    input:
-        "datos/proceso_purificacion.xlsx"
-    output:
-        expand("datos/paso{paso}.csv", paso=range(1, 6))
-    script:
-        "cargar_excel_y_separar_csv.py"
+# Load the configuration file
+configfile: "config.yaml"
 
-# Reglas para transformar y renombrar los archivos CSV
-rule transformar_csv:
-    input:
-        csv="datos/paso{paso}.csv"
-    output:
-        mod="datos/paso{paso}_mod.csv"
-    script:
-        "transformar_csv.py"
+# Define variables for paths and directories
+working_directory: config.get("working_directory", "/path/to/working_directory")
+data_dir: config.get("data_dir", "/path/to/data_directory")
+software_base_dir: config.get("software_base_dir", "/path/to/software_directory")
+temp_dir: config.get("temp_dir", "/path/to/temporary_directory")
+workflow_dir: config.get("workflow_dir", "/path/to/workflow_directory")
 
-# Regla para cargar todos los CSV transformados en la base de datos
-rule cargar_en_base_de_datos:
+# Define the Excel file path from the configuration
+excel_file: config["excel_file"]
+
+# Rule 1: Read Excel Metadata and Create JSON
+rule extract_metadata:
     input:
-        expand("datos/paso{paso}_mod.csv", paso=range(1, 6))
-    script:
-        "cargar_en_base_de_datos.py"
+        excel_file
+    output:
+        "metadata.json"
+    shell:
+        """
+        # Command to read Excel and create JSON
+        python extract_pyThrotein_metadata.py -fi {input} -fo {output}
+        """
