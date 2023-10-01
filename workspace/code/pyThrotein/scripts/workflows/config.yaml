@@ -6,9 +6,22 @@
 base_dir: /workspaces/mgv033.2-fdz-viu-tfm
 working_directory: /workspaces/mgv033.2-fdz-viu-tfm/workspace/code/pyThrotein
 data_dir: /workspaces/mgv033.2-fdz-viu-tfm/workspace/code/pyThrotein/data
+config_dir: /workspaces/mgv033.2-fdz-viu-tfm/workspace/code/pyThrotein/data
 software_base_dir: /workspaces/mgv033.2-fdz-viu-tfm/workspace/code
 temp_dir: /workspaces/mgv033.2-fdz-viu-tfm/workspace/TMP
 workflow_dir: /workspaces/mgv033.2-fdz-viu-tfm/workspace/code/pyThrotein/scripts/workflows
 
+#==========================================
 # Define the Excel file path
 excel_file: /workspaces/mgv033.2-fdz-viu-tfm/workspace/code/pyThrotein/data/raw_data/TFM_database.xlsx
+
+metadata_json: /workspaces/mgv033.2-fdz-viu-tfm/workspace/code/pyThrotein/config/metadata.json
+
+db_model_sql: /workspaces/mgv033.2-fdz-viu-tfm/workspace/code/pyThrotein/config/db_model.sql
+
+db_file: /workspaces/mgv033.2-fdz-viu-tfm/workspace/code/pyThrotein/data/processed_data/pyThrotein.db
+
+#==========================================
+# parameters
+metadata_default_sheet: metadata
+

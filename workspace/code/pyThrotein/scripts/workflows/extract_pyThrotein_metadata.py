@@ -58,7 +58,7 @@ def save_json_to_file(json_data, file_path):
 @click.option('-i', '--input-file', type=click.Path(exists=True), help='Ruta al archivo Excel', metavar='EXCEL_FILE_PATH')
 #@click.argument('output_file_path', type=click.Path(), metavar='OUTPUT_FILE_PATH', callback=lambda ctx, param, value: value or None)
 @click.option('-o', '--output-file', type=click.Path(), help='Ruta al archivo de salida JSON', metavar='OUTPUT_FILE_PATH')
-@click.option('--metadata-sheet-name', default='Metadata', help='Nombre de la hoja de metadata')
+@click.option('--metadata-sheet-name', default='metadata', help='Nombre de la hoja de metadata')
 def main(debug, input_file, output_file, metadata_sheet_name):
 
     excel_file_path = input_file

@@ -16,14 +16,32 @@ workflow_dir: config.get("workflow_dir", "/path/to/workflow_directory")
 # excel_file: config["excel_file"]
 # metadata_json: f"{config['data_dir']}/processed_data/metadata.json"
 
+
+#rule all:
+#    input:
+#        config["db_file"]
+
 # Rule 1: Read Excel Metadata and Create JSON
 rule extract_metadata:
     input:
         config["excel_file"]
     output:
-        f"{config['data_dir']}/processed_data/metadata.json"
+        config['metadata_json']
     shell:
         """
         # Command to read Excel and create JSON
         python extract_pyThrotein_metadata.py -i {input} -o {output}
+        """
+
+# Rule 2: Create DB Model from JSON Metadata
+rule create_db_model:
+    input:
+        config['metadata_json']
+    output:
+        config["db_model_sql"]
+        config["create_db_sh"]
+    shell:
+        """
+        # Command to create DB model from JSON metadata
+        python create_db_model.py --input {input} --output {output}
         """
