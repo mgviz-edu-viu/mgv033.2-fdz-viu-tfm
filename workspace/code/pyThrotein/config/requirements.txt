@@ -1,0 +1,7 @@
+pandas
+matplotlib
+seaborn
+dash
+fastapi
+sqlmodel
+openpyxl
