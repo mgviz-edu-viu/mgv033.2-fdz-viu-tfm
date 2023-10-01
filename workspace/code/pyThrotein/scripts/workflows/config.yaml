@@ -1,0 +1,14 @@
+# Configuration file for the Snakemake workflow
+
+# Define the paths and directories
+# this workflow is designed to be run in a docker container
+# and we expecet to mount our data into /DATA
+base_dir: /workspaces/mgv033.2-fdz-viu-tfm
+working_directory: /workspaces/mgv033.2-fdz-viu-tfm/workspace/code/pyThrotein
+data_dir: /workspaces/mgv033.2-fdz-viu-tfm/workspace/code/pyThrotein/data
+software_base_dir: /workspaces/mgv033.2-fdz-viu-tfm/workspace/code
+temp_dir: /workspaces/mgv033.2-fdz-viu-tfm/workspace/TMP
+workflow_dir: /workspaces/mgv033.2-fdz-viu-tfm/workspace/code/pyThrotein/scripts/workflows
+
+# Define the Excel file path
+excel_file: /workspaces/mgv033.2-fdz-viu-tfm/workspace/code/pyThrotein/data/raw_data/TFM_database.xlsx
