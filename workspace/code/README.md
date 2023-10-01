@@ -13,3 +13,4 @@ The scripts needed
   * for each experiment create a PDF report
 * [ ] create sankey plot of the full purification ecosistem
 * [ ] write the anual report of the service for protein purification
+* [ ] Snakemake wrapper for the pipeline
