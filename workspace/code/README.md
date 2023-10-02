@@ -7,7 +7,7 @@ RADME code
 
 // scripts
 
-* [ ] read metadata and create json
+* [X] read metadata and create json
 * [ ] read json and create db model
 * [ ] read database excel sheet and 
   * [ ] add the exp_id to each purification table 

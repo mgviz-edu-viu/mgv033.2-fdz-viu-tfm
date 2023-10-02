@@ -14,14 +14,20 @@ workflow_dir: /workspaces/mgv033.2-fdz-viu-tfm/workspace/code/pyThrotein/scripts
 #==========================================
 # Define the Excel file path
 excel_file: /workspaces/mgv033.2-fdz-viu-tfm/workspace/code/pyThrotein/data/raw_data/TFM_database.xlsx
-
 metadata_json: /workspaces/mgv033.2-fdz-viu-tfm/workspace/code/pyThrotein/config/metadata.json
-
 db_model_sql: /workspaces/mgv033.2-fdz-viu-tfm/workspace/code/pyThrotein/config/db_model.sql
-
 db_file: /workspaces/mgv033.2-fdz-viu-tfm/workspace/code/pyThrotein/data/processed_data/pyThrotein.db
+create_db_sh: /workspaces/mgv033.2-fdz-viu-tfm/workspace/code/pyThrotein/scripts/workflows/initialize_sqlite.sh
 
 #==========================================
 # parameters
 metadata_default_sheet: metadata
+purification_methods:
+    - IEX
+    - IMAC
+    - Induction
+    - Prot
+    - SEC
+    - SUMO
+
 

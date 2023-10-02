@@ -1,6 +1,13 @@
 # Import the Snakemake library
 import snakemake
 
+# Import the datetime module
+from datetime import datetime
+
+# Define a global variable for the current date in ISO format
+iso_date = datetime.now().isoformat()
+
+
 # Load the configuration file
 configfile: "config.yaml"
 
@@ -17,9 +24,11 @@ workflow_dir: config.get("workflow_dir", "/path/to/workflow_directory")
 # metadata_json: f"{config['data_dir']}/processed_data/metadata.json"
 
 
-#rule all:
-#    input:
-#        config["db_file"]
+rule all:
+    input:
+        f"{config['data_dir']}/processed_data/test_db.OK",
+        #config["db_file"],
+
 
 # Rule 1: Read Excel Metadata and Create JSON
 rule extract_metadata:
@@ -38,10 +47,53 @@ rule create_db_model:
     input:
         config['metadata_json']
     output:
-        config["db_model_sql"]
-        config["create_db_sh"]
+        model=config["db_model_sql"],
+        sql_script=config["create_db_sh"]
     shell:
         """
         # Command to create DB model from JSON metadata
-        python create_db_model.py --input {input} --output {output}
+        python create_db_model.py --input {input} --output-sql {output.model} \
+               --output-bash {output.sql_script} --db-path {config["db_file"]}
+        """
+
+rule initialize_db:
+    input:
+        config["db_model_sql"]
+    output:
+        config["db_file"]
+    shell:
+        f"bash {config['create_db_sh']}"
+
+# Rule 4: Read Excel Sheet with Purification Data
+rule read_purification_excel:
+    input:
+        config['excel_file']
+    output:
+        # Output CSV files for each purification method
+        expand(f"{config['data_dir']}/processed_data/purification_method_{{method}}.csv", method=config['purification_methods'])
+    script:
+        "split_purification_excel.py --input {input}"
+
+# Rule 5: Load Purification Data into the Database
+    rule load_data_into_db:
+        input:
+            method_file= f"{config['data_dir']}/processed_data/purification_method_{wildcards.method}.csv"
+    output:
+        log_file=lambda wildcards: f"{config['data_dir']}/processed_data/loaded_data_for_{wildcards.method}-{iso_date}.log"
+    shell:
+        """
+        python load_data_into_db.py --input {input.method_file} --output {output.log_file}
+        """
+
+# Rule 6: Check Database
+rule check_db:
+    input:
+        log_file=lambda wildcards: f"{config['data_dir']}/processed_data/loaded_data_for_{wildcards.method}-{iso_date}.log"
+    output:
+        touch(f"{config['data_dir']}/processed_data/test_db.OK")
+    shell:
+        """
+        # Add your check logic here
+        echo "Checking the database..."
+        # Add any necessary commands to check the database
         """

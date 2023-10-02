@@ -9,10 +9,10 @@ def transform_values_limit(value):
     # only a [] if empty string or nan (converted to empty string with fillna())
     try:
         if value is None or value == '':
-            return [] 
+            return [""] 
         return str(value).split(',')
     except (TypeError, AttributeError):
-        return []
+        return [""]
 
 # Función para procesar cada grupo y crear un JSON para cada uno
 def process_group(group_data):
