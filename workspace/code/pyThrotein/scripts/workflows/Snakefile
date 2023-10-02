@@ -14,20 +14,20 @@ configfile: "config.yaml"
 # Define variables for paths and directories
 working_directory: config.get("working_directory", "/path/to/working_directory")
 data_dir: config.get("data_dir", "/path/to/data_directory")
-software_base_dir: config.get("software_base_dir", "/path/to/software_directory")
+software_base_dir: config.get("software_base_dir", "/path/to/software_dire}ctory")
 temp_dir: config.get("temp_dir", "/path/to/temporary_directory")
 workflow_dir: config.get("workflow_dir", "/path/to/workflow_directory")
 
+# LOG_FILES=expand(f"{config['data_dir']}/processed_data/loaded_data_for_{{method}}-{iso_date}.log", method=config['purification_methods'])
 
 # Define the Excel file path from the configuration
 # excel_file: config["excel_file"]
 # metadata_json: f"{config['data_dir']}/processed_data/metadata.json"
 
-
 rule all:
     input:
-        f"{config['data_dir']}/processed_data/test_db.OK",
-        #config["db_file"],
+        expand(f"{config['data_dir']}/processed_data/log/test_db-{{method}}.OK", method=config["purification_methods"]),
+        #config["db_file"]
 
 
 # Rule 1: Read Excel Metadata and Create JSON
@@ -49,51 +49,70 @@ rule create_db_model:
     output:
         model=config["db_model_sql"],
         sql_script=config["create_db_sh"]
+    params:
+        db_path=config["db_file"]
     shell:
         """
         # Command to create DB model from JSON metadata
         python create_db_model.py --input {input} --output-sql {output.model} \
-               --output-bash {output.sql_script} --db-path {config["db_file"]}
+               --output-bash {output.sql_script} --db-path {params.db_path}
         """
 
+#rule 3
 rule initialize_db:
     input:
         config["db_model_sql"]
     output:
-        config["db_file"]
+        # config["db_file"]
+        touch(f"{config['data_dir']}/processed_data/logs/db-initialization.DONE")
     shell:
         f"bash {config['create_db_sh']}"
 
 # Rule 4: Read Excel Sheet with Purification Data
-rule read_purification_excel:
+rule read_and_aplit_purification_excel:
     input:
-        config['excel_file']
+        config['excel_file'],
+        f"{config['data_dir']}/processed_data/logs/db-initialization.DONE"
     output:
         # Output CSV files for each purification method
         expand(f"{config['data_dir']}/processed_data/purification_method_{{method}}.csv", method=config['purification_methods'])
+    params:
+        ",".join(config["purification_methods"])
     script:
-        "split_purification_excel.py --input {input}"
+        """
+            echo "{parameters[0]}"
+            split_purification_excel.py --input {input[0]} --outdir f"{config['data_dir']}/processed_data/" \
+                                        --methods {params[0]})
+        """
 
 # Rule 5: Load Purification Data into the Database
-    rule load_data_into_db:
-        input:
-            method_file= f"{config['data_dir']}/processed_data/purification_method_{wildcards.method}.csv"
+rule load_data_into_db:
+    input:
+        method_file= f"{config['data_dir']}/processed_data/purification_method_{{method}}.csv"
     output:
-        log_file=lambda wildcards: f"{config['data_dir']}/processed_data/loaded_data_for_{wildcards.method}-{iso_date}.log"
+        status=f"{config['data_dir']}/processed_data/log/status_db_load-{{method}}.DONE"
     shell:
         """
-        python load_data_into_db.py --input {input.method_file} --output {output.log_file}
+        python load_data_into_db.py --input {input.method_file};
+        touch {output.status}
         """
 
 # Rule 6: Check Database
 rule check_db:
     input:
-        log_file=lambda wildcards: f"{config['data_dir']}/processed_data/loaded_data_for_{wildcards.method}-{iso_date}.log"
+        status_file=f"{config['data_dir']}/processed_data/log/status_db_load-{{method}}.DONE"
     output:
-        touch(f"{config['data_dir']}/processed_data/test_db.OK")
+        touch(f"{config['data_dir']}/processed_data/log/test_db-{{method}}.OK")
     shell:
         """
         # Add your check logic here
         echo "Checking the database..."
         # Add any necessary commands to check the database
         """
+# rule 7 analysis
+
+
+
+
+# rule 8 reports pdf
+
