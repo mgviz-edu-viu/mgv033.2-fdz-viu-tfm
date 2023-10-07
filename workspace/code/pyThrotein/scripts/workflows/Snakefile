@@ -109,7 +109,15 @@ rule check_db:
         echo "Checking the database..."
         # Add any necessary commands to check the database
         """
-# rule 7 analysis
+# rule 7 gathered_analysis_report
+    input:
+        expand(f"{config['data_dir']}/processed_data/log/test_db-{{method}}.OK",  method=config['purification_methods'])
+    ouptut:
+        pdf_report=f"{config['data_dir']}/processed_data/"
+    shell:
+        """
+            python create_pythrotein_report.py --output output
+        """
 
 
 

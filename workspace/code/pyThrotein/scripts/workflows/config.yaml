@@ -7,7 +7,8 @@ base_dir: /workspaces/mgv033.2-fdz-viu-tfm
 working_directory: /workspaces/mgv033.2-fdz-viu-tfm/workspace/code/pyThrotein
 data_dir: /workspaces/mgv033.2-fdz-viu-tfm/workspace/code/pyThrotein/data
 config_dir: /workspaces/mgv033.2-fdz-viu-tfm/workspace/code/pyThrotein/data
-software_base_dir: /workspaces/mgv033.2-fdz-viu-tfm/workspace/code
+report_dir: /workspaces/mgv033.2-fdz-viu-tfm/workspace/code/pyThrotein/reports
+software_base_dir: /workspaces/mgv033.2-fdz-viu-tfm/workspace/software
 temp_dir: /workspaces/mgv033.2-fdz-viu-tfm/workspace/TMP
 workflow_dir: /workspaces/mgv033.2-fdz-viu-tfm/workspace/code/pyThrotein/scripts/workflows
 
