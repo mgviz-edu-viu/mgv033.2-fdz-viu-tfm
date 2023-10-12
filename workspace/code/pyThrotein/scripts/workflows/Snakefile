@@ -51,7 +51,7 @@ rule 1_extract_metadata:
         """
 
 # Rule 2: Create DB Model from JSON Metadata
-rule create_db_model:
+rule 2-create_db_model:
     input:
         config['metadata_json']
     output:
@@ -67,7 +67,7 @@ rule create_db_model:
         """
 
 #rule 3
-rule initialize_db:
+rule 3-initialize_db:
     input:
         config["db_model_sql"]
     output:
@@ -77,7 +77,7 @@ rule initialize_db:
         f"bash {config['create_db_sh']}"
 
 # Rule 4: Read Excel Sheet with Purification Data
-rule read_and_split_purification_excel:
+rule 4-read_and_split_purification_excel:
     input:
         excel=config['excel_file'],
         status=f"{config['data_dir']}/processed_data/logs/db-initialization.DONE"
@@ -94,7 +94,7 @@ rule read_and_split_purification_excel:
         """
 
 # Rule 5: Load Purification Data into the Database
-rule load_data_into_db:
+rule 5-load_data_into_db:
     input:
         method_file=f"{config['data_dir']}/processed_data/purification_method_{{method}}.csv"
     output:
@@ -106,7 +106,7 @@ rule load_data_into_db:
         """
 
 # Rule 6: Check Database
-rule check_db:
+rule 6-check_db:
     """
     - Check that ALL output status DONE are created, 
     - then check the overall db integrity 
@@ -123,7 +123,7 @@ rule check_db:
         # Add any necessary commands to check the database
         """
 # rule 7 gathered_analysis_report
-rule  gathered_analysis_report:
+rule  7-gathered_analysis_report:
     input:
         db_status=f"{config['data_dir']}/processed_data/logs/test_db.OK"
     output:
