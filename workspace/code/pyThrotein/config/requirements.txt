@@ -5,3 +5,5 @@ dash
 fastapi
 sqlmodel
 openpyxl
+uvicorn[standard]
+
