@@ -29,13 +29,13 @@ snakemake -np
 ## Workflow steps
 
 1. Rule for Reading Excel Metadata and Creating JSON:
-   - Name: `Extract_metadata`
+   - Name: `r1_extract_metadata`
    - Input: `Excel file`
    - Output: `metadata.json`
    - Script: `extract_pyThrotein_metadata.py`
 
 2. Rule for Creating DB Model from JSON Metadata:
-   - Name: `create_db_model`
+   - Name: `r2_create_db_model`
    - Input: `metadata.json`
    - Output: `db_model.sql`, `init_db.sh`
    - Script: `create_db_model.py`
@@ -43,7 +43,7 @@ snakemake -np
 3. Rule for Initializing SQLite Database from DB Model:
    - Name: `initialize_sqlite_db`
    - Input: `db_model.sql`
-   - Output: `logs/db-initialization.DONE`
+   - Output: `/processed_data/logs/db-initialization.DONE`
       - <also> SQLite database file (e.g., `protein_purification.db`)
    - Script: `bash init_db.sh`
 
@@ -71,8 +71,9 @@ snakemake -np
    - Output: Sankey plot image file (e.g., `sankey_plot.png`)
    - Script: `create_sankey_plot.py`
 
-8. Rule for Writing the Annual Report:
+8.1 . Rule for Writing the Annual Report:
    - Name: `write_annual_report`
    - Input: Database and other data
    - Output: Annual report document (e.g., `annual_report.pdf` or `annual_report.docx`)
    - Script: `write_annual_report.py`
+8.2 . Rule for writing
