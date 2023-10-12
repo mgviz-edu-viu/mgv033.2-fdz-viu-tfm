@@ -1,3 +1,11 @@
+"""
+Pipeline for processing the Pythrotein
+=======================================
+
+dry run: $ snakemake -np
+generate dag svg: $ snakemake -np --dag | dot -Tsvg > dag-full.svg
+
+"""
 # Import the Snakemake library
 import snakemake
 
@@ -31,7 +39,7 @@ rule all:
 
 
 # Rule 1: Read Excel Metadata and Create JSON
-rule extract_metadata:
+rule 1_extract_metadata:
     input:
         config["excel_file"]
     output:
@@ -63,34 +71,34 @@ rule initialize_db:
     input:
         config["db_model_sql"]
     output:
-        # config["db_file"]
+        #config["db_file"],
         touch(f"{config['data_dir']}/processed_data/logs/db-initialization.DONE")
     shell:
         f"bash {config['create_db_sh']}"
 
 # Rule 4: Read Excel Sheet with Purification Data
-rule read_and_aplit_purification_excel:
+rule read_and_split_purification_excel:
     input:
-        config['excel_file'],
-        f"{config['data_dir']}/processed_data/logs/db-initialization.DONE"
+        excel=config['excel_file'],
+        status=f"{config['data_dir']}/processed_data/logs/db-initialization.DONE"
     output:
         # Output CSV files for each purification method
         expand(f"{config['data_dir']}/processed_data/purification_method_{{method}}.csv", method=config['purification_methods'])
     params:
-        ",".join(config["purification_methods"])
+        methods=",".join(config["purification_methods"])
     script:
         """
-            echo "{parameters[0]}"
-            split_purification_excel.py --input {input[0]} --outdir f"{config['data_dir']}/processed_data/" \
-                                        --methods {params[0]})
+            echo "{params[0]}"
+            split_purification_excel.py --input {input['excel']} --outdir f"{config['data_dir']}/processed_data/" \
+                                        --methods {params['methods']})
         """
 
 # Rule 5: Load Purification Data into the Database
 rule load_data_into_db:
     input:
-        method_file= f"{config['data_dir']}/processed_data/purification_method_{{method}}.csv"
+        method_file=f"{config['data_dir']}/processed_data/purification_method_{{method}}.csv"
     output:
-        status=f"{config['data_dir']}/processed_data/log/status_db_load-{{method}}.DONE"
+        status=f"{config['data_dir']}/processed_data/logs/status_db_load-{{method}}.DONE"
     shell:
         """
         python load_data_into_db.py --input {input.method_file};
@@ -99,10 +107,15 @@ rule load_data_into_db:
 
 # Rule 6: Check Database
 rule check_db:
+    """
+    - Check that ALL output status DONE are created, 
+    - then check the overall db integrity 
+    - and create the status-ok for the database  
+    """
     input:
-        status_file=f"{config['data_dir']}/processed_data/log/status_db_load-{{method}}.DONE"
+        status_files=expand(f"{config['data_dir']}/processed_data/log/status_db_load-{{method}}.DONE", method=config['purification_methods'])
     output:
-        touch(f"{config['data_dir']}/processed_data/log/test_db-{{method}}.OK")
+        touch(f"{config['data_dir']}/processed_data/logs/test_db.OK")
     shell:
         """
         # Add your check logic here
@@ -110,17 +123,43 @@ rule check_db:
         # Add any necessary commands to check the database
         """
 # rule 7 gathered_analysis_report
+rule  gathered_analysis_report:
     input:
-        expand(f"{config['data_dir']}/processed_data/log/test_db-{{method}}.OK",  method=config['purification_methods'])
-    ouptut:
-        pdf_report=f"{config['data_dir']}/processed_data/"
+        db_status=f"{config['data_dir']}/processed_data/logs/test_db.OK"
+    output:
+        pdf_report=f"{config['report_dir']}/report-{iso_date}.pdf"
+    params:
+        db_file=config["db_file"]
     shell:
         """
-            python create_pythrotein_report.py --output output
+        python create_pythrotein_general_report.py --input {input.db_status} --output {output.pdf_report} --db {params.db_file}
         """
 
+# rule 8 reports pdf per experiment
+#    """
+#    When database is done, ask for each experiment and its related purifications and create a pdf for each experiment.
+#    """
+rule 8_1_get_experiment_list:
+    input:
+        db_status=f"{config['report_dir']}/logs/test_db.OK"
+        db_file=config["db_file"]
+    output:
+        experiments_list=f"{config['data_dir']}/processed_data/experiments_list-{iso_date}.txt" 
+    shell:
+        """
+        get_experiment_list.py --input {input.db_file}
+        """
 
-
-
-# rule 8 reports pdf
+rule 8_2_generate_report_by_experiment:
+    input: 
+        experiments_list=f"{config['data_dir']}/processed_data/experiments_list-{iso_date}.txt"
+    output:
+        touch(f"{config['report_dir']}/logs/rule8-experiment_pdf_reports.DONE")
+    params:
+        pdf_reports_dir=config.get('pdf_individual_reports_dir', f'{config['report_dir']}/reports_by_experiment/exp_rep-{iso_date}')
+    shell:
+        """
+        mkdir {params.pdf_report_dir}
+        python create_pythrotein_report.py --outdir {params.pdf_reports_dir}
+        """
 

@@ -11,6 +11,7 @@ report_dir: /workspaces/mgv033.2-fdz-viu-tfm/workspace/code/pyThrotein/reports
 software_base_dir: /workspaces/mgv033.2-fdz-viu-tfm/workspace/software
 temp_dir: /workspaces/mgv033.2-fdz-viu-tfm/workspace/TMP
 workflow_dir: /workspaces/mgv033.2-fdz-viu-tfm/workspace/code/pyThrotein/scripts/workflows
+reports_dir: /workspaces/mgv033.2-fdz-viu-tfm/workspace/code/pyThrotein/results/reports
 
 #==========================================
 # Define the Excel file path
