@@ -41,39 +41,44 @@ snakemake -np
    - Script: `create_db_model.py`
 
 3. Rule for Initializing SQLite Database from DB Model:
-   - Name: `initialize_sqlite_db`
+   - Name: `r3_ initialize_db`
    - Input: `db_model.sql`
-   - Output: `/processed_data/logs/db-initialization.DONE`
+   - Output: `{data}/processed_data/logs/db-initialization.DONE`
       - <also> SQLite database file (e.g., `protein_purification.db`)
    - Script: `bash init_db.sh`
 
 4. Rule for Reading Excel Sheet with Purification Data:
-   - Name: `read_purification_excel`
-   - Input: Excel file
-   - Output: Multiple CSV files (one for each purification method)
-   - Script: `read_purification_excel.py`
+   - Name: `r4_read_and_split_purification_excel`
+   - Input: `Excel file`, `{data}/processed_data/logs/db-initialization.DONE` 
+   - Output: `/processed_data/purification_method_{{method}}.csv` ## one csv file for each purification method
+   - Script: `split_purification_excel.py`
 
 5. Rule for Loading Purification Data into the Database:
-   - Name: `load_data_into_db`
-   - Input: Purification CSV files
-   - Output: Log files (e.g., `"loaded_data_for_{purification_method}-{iso-date}.log"`)
+   - Name: `r5_load_data_into_db`
+   - Input: `{data}/processed_data/purification_method_{{method}}.csv`# Purification CSV files by method
+   - Output: `{data}/processed_data/logs/status_db_load-{{method}}.DONE` # Log files by method
    - Script: `load_data_into_db.py`
 
-6. Rule for Creating PDF Reports for Each Protein Purification Experiment:
-   - Name: `create_pdf_reports`
-   - Input: Protein experiment IDs
-   - Output: PDF reports (one for each experiment)
-   - Script: `create_pdf_reports.py`
+6. Rule for checking the db is fully loaded:
+   - Name: `r6_check_db`
+   - Input: `{data}/processed_data/logs/status_db_load-{{method}}.DONE` # Protein experiment IDs
+   - Output: `{data}/processed_data/logs/test_db.OK`
+   - Script: `check_db.py`
 
-7. Rule for Creating Sankey Plot of the Purification Ecosystem:
-   - Name: `create_sankey_plot`
-   - Input: Database and other data
-   - Output: Sankey plot image file (e.g., `sankey_plot.png`)
-   - Script: `create_sankey_plot.py`
+7. Rule for Creating PDF Reports for full Protein Purification Experiment:
+   - Name: `r_7_1_gathered_analysis_report`
+   - Input: `{data}/processed_data/logs/test_db.OK` # Database and other data
+   - Output: `{data}/report-{iso_date}.pdf"`
+   - Script: `create_pythrotein_general_report.py`
 
-8.1 . Rule for Writing the Annual Report:
-   - Name: `write_annual_report`
-   - Input: Database and other data
-   - Output: Annual report document (e.g., `annual_report.pdf` or `annual_report.docx`)
-   - Script: `write_annual_report.py`
-8.2 . Rule for writing
+8.1. get list of experiments in a file
+   - Name: `r8_1_get_experiment_list`
+   - Input: `{data}/processed_data/logs/test_db.OK`
+   - Output: `{data}/processed_data/experiments_list-{iso_date}.txt` 
+   - Script: `get_experiment_list.py`
+
+8.2 . Rule for writing pdf for each experiment
+   - Name: `r8_2_generate_report_by_experiment`
+   - input: `{data}/processed_data/experiments_list-{iso_date}.txt`
+   - output: `{report_dir}/logs/rule8-experiment_pdf_reports.DONE`
+   - script: `create_pythrotein_report.py`

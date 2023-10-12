@@ -90,9 +90,9 @@ rule r4_read_and_split_purification_excel:
         methods=",".join(config["purification_methods"])
     script:
         """
-            echo "{params[0]}"
-            split_purification_excel.py --input {input['excel']} --outdir f"{config['data_dir']}/processed_data/" \
-                                        --methods {params['methods']})
+            echo "{params.methods}"
+            split_purification_excel.py --input {input.excel} --outdir f"{config['data_dir']}/processed_data/" \
+                                        --methods {params.methods})
         """
 
 # Rule 5: Load Purification Data into the Database
@@ -117,15 +117,16 @@ rule r6_check_db:
     input:
         status_files=expand(f"{config['data_dir']}/processed_data/logs/status_db_load-{{method}}.DONE", method=config['purification_methods'])
     output:
-        touch(f"{config['data_dir']}/processed_data/logs/test_db.OK")
+        check_result_ok=f"{config['data_dir']}/processed_data/logs/test_db.OK"
     shell:
         """
         # Add your check logic here
         echo "Checking the database..."
         # Add any necessary commands to check the database
+        check_db.py --tables config['purification_methods'] --output_tt f"{config['data_dir']}/processed_data/logs/test_db.{{RESULT}}"
         """
 # rule 7 gathered_analysis_report
-rule r7_gathered_analysis_report:
+rule r7_1_gathered_analysis_report:
     input:
         db_status=f"{config['data_dir']}/processed_data/logs/test_db.OK"
     output:
