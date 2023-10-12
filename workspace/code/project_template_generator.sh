@@ -34,6 +34,8 @@ mkdir -vp "$project_name/data/raw_data"
 create_readme "$project_name/data/raw_data"
 mkdir -vp "$project_name/data/processed_data"
 create_readme "$project_name/data/processed_data"
+mkdir -vp "$project_name/data/processed_data/logs"
+create_readme "$project_name/data/processed_data/logs"
 mkdir -vp "$project_name/data/annotations"
 create_readme "$project_name/data/annotations"
 
@@ -68,6 +70,9 @@ mkdir -vp "$project_name/results/tables"
 create_readme "$project_name/results/tables"
 mkdir -vp "$project_name/results/reports"
 create_readme "$project_name/results/reports"
+mkdir -vp "$project_name/results/reports/logs"
+create_readme "$project_name/results/reports/logs"
+
 
 # Create documentation directory and subdirectories
 mkdir -vp "$project_name/documentation/docs"
