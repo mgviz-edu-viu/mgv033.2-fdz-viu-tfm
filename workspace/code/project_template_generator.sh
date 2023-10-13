@@ -65,6 +65,16 @@ create_readme "$project_name/tests/test_analysis"
 mkdir -vp "$project_name/tests/test_visualization"
 create_readme "$project_name/tests/test_visualization"
 
+# Create analysis directory and subdirectories
+mkdir -vp "$project_name/analysis"
+create_readme "$project_name/analysis"
+mkdir -vp "$project_name/analysis/figures"
+create_readme "$project_name/analysis/figures"
+mkdir -vp "$project_name/analysis/tables"
+create_readme "$project_name/analysis/tables"
+mkdir -vp "$project_name/analysis/results/logs"
+create_readme "$project_name/analysis/results/logs"
+
 # Create results directory and subdirectories
 mkdir -vp "$project_name/results/figures"
 create_readme "$project_name/results/figures"
