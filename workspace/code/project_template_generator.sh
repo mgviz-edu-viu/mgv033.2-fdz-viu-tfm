@@ -54,6 +54,8 @@ mkdir -vp "$project_name/scripts/visualization"
 create_readme "$project_name/scripts/visualization"
 mkdir -vp "$project_name/scripts/workflows"
 create_readme "$project_name/scripts/workflows"
+mkdir -vp "$project_name/scripts/app"
+create_readme "$project_name/scripts/app"
 
 # Create tests directory and subdirectories
 mkdir -vp "$project_name/tests/test_preprocessing"
