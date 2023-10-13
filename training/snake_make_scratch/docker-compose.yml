@@ -1,0 +1,19 @@
+version: '3'
+
+services:
+  backend:
+    build:
+      dockerfile: Dockerfile
+      context: .
+    image: backend_app:0.0.1
+    ports:
+      - "8000:80"
+  dash_app:
+    build:
+      dockerfile: Dockerfile
+      context: .
+    image: dash_app:0.0.1
+    ports:
+      - "4500:4050"
+  snakemake_tool:
+    image: snakemake/snakemake:7.32.4
