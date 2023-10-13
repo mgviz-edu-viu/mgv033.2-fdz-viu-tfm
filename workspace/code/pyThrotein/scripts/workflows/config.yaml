@@ -4,11 +4,13 @@
 # this workflow is designed to be run in a docker container
 # and we expecet to mount our data into /DATA
 base_dir: /workspaces/mgv033.2-fdz-viu-tfm
+project_base_dir: /workspaces/mgv033.2-fdz-viu-tfm/workspace/code/pyThrotein
 working_directory: /workspaces/mgv033.2-fdz-viu-tfm/workspace/code/pyThrotein
 data_dir: /workspaces/mgv033.2-fdz-viu-tfm/workspace/code/pyThrotein/data
 config_dir: /workspaces/mgv033.2-fdz-viu-tfm/workspace/code/pyThrotein/data
 report_dir: /workspaces/mgv033.2-fdz-viu-tfm/workspace/code/pyThrotein/reports
 software_base_dir: /workspaces/mgv033.2-fdz-viu-tfm/workspace/software
+software_analysis_dir: /workspaces/mgv033.2-fdz-viu-tfm/workspace/code/pyThrotein/scripts/analysis
 temp_dir: /workspaces/mgv033.2-fdz-viu-tfm/workspace/TMP
 workflow_dir: /workspaces/mgv033.2-fdz-viu-tfm/workspace/code/pyThrotein/scripts/workflows
 reports_dir: /workspaces/mgv033.2-fdz-viu-tfm/workspace/code/pyThrotein/results/reports
@@ -19,7 +21,7 @@ excel_file: /workspaces/mgv033.2-fdz-viu-tfm/workspace/code/pyThrotein/data/raw_
 metadata_json: /workspaces/mgv033.2-fdz-viu-tfm/workspace/code/pyThrotein/config/metadata.json
 db_model_sql: /workspaces/mgv033.2-fdz-viu-tfm/workspace/code/pyThrotein/config/db_model.sql
 db_file: /workspaces/mgv033.2-fdz-viu-tfm/workspace/code/pyThrotein/data/processed_data/pyThrotein.db
-init_db_sh: /workspaces/mgv033.2-fdz-viu-tfm/workspace/code/pyThrotein/scripts/workflows/initialize_sqlite.sh
+init_db_sh: /workspaces/mgv033.2-fdz-viu-tfm/workspace/code/pyThrotein/scripts/analysis/initialize_sqlite.sh
 
 
 #==========================================

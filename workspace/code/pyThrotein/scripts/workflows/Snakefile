@@ -20,11 +20,13 @@ iso_date = datetime.now().strftime('%Y-%m-%dT%H%M%S')
 configfile: "config.yaml"
 
 # Define variables for paths and directories
-working_directory: config.get("working_directory", "/path/to/working_directory")
-data_dir: config.get("data_dir", "/path/to/data_directory")
-software_base_dir: config.get("software_base_dir", "/path/to/software_dire}ctory")
-temp_dir: config.get("temp_dir", "/path/to/temporary_directory")
-workflow_dir: config.get("workflow_dir", "/path/to/workflow_directory")
+working_directory: config.get("working_directory", "./")
+data_dir: config.get("data_dir", "/DATA")
+software_base_dir: config.get("software_base_dir", "/SOFTWARE")
+software_analysis_dir: config['project_base_dir'] + '/scripts/analysis'
+temp_dir: config.get("temp_dir", "/TMP")
+workflow_dir: config.get("workflow_dir", "./")
+
 
 # LOG_FILES=expand(f"{config['data_dir']}/processed_data/loaded_data_for_{{method}}-{iso_date}.log", method=config['purification_methods'])
 
@@ -49,7 +51,7 @@ rule r1_extract_metadata:
     shell:
         """
         # Command to read Excel and create JSON
-        python extract_pyThrotein_metadata.py -i {input} -o {output}
+        python {config[software_analysis_dir]}/extract_pyThrotein_metadata.py -i {input} -o {output}
         """
 
 # Rule 2: Create DB Model from JSON Metadata
@@ -64,7 +66,7 @@ rule r2_create_db_model:
     shell:
         """
         # Command to create DB model from JSON metadata
-        python create_db_model.py --input {input} --output-sql {output.model} \
+        python {config[software_analysis_dir]}/create_db_model.py --input {input} --output-sql {output.model} \
                --output-bash {output.sql_script} --db-path {params.db_path}
         """
 
@@ -91,7 +93,7 @@ rule r4_read_and_split_purification_excel:
     script:
         """
             echo "{params.methods}"
-            split_purification_excel.py --input {input.excel} --outdir f"{config['data_dir']}/processed_data/" \
+            python {config[software_analysis_dir]}/split_purification_excel.py --input {input.excel} --outdir f"{config['data_dir']}/processed_data/" \
                                         --methods {params.methods})
         """
 
@@ -103,7 +105,7 @@ rule r5_load_data_into_db:
         status=f"{config['data_dir']}/processed_data/logs/status_db_load-{{method}}.DONE"
     shell:
         """
-        python load_data_into_db.py --input {input.method_file};
+        python {config[software_analysis_dir]}/load_data_into_db.py --input {input.method_file};
         touch {output.status}
         """
 
@@ -111,7 +113,7 @@ rule r5_load_data_into_db:
 rule r6_check_db:
     """
     - Check that ALL output status DONE are created, 
-    - then check the overall db integrity 
+    - then check the overall db integrity
     - and create the status-ok for the database  
     """
     input:
@@ -126,7 +128,7 @@ rule r6_check_db:
         # Add your check logic here
         echo "Checking the database..."
         # Add any necessary commands to check the database
-        check_db.py --tables "{params.methods}" --output_tt "{params.data_dir}/processed_data/logs/test_db.{{RESULT}}"
+        python {config[software_analysis_dir]}/check_db.py --tables "{params.methods}" --output_tt "{params.data_dir}/processed_data/logs/test_db.{{RESULT}}"
         """
 # rule 7 gathered_analysis_report
 rule r7_1_gathered_analysis_report:
@@ -138,7 +140,7 @@ rule r7_1_gathered_analysis_report:
         db_file=config["db_file"]
     shell:
         """
-        python create_pythrotein_general_report.py --input {input.db_status} --output {output.pdf_report} --db {params.db_file}
+        python {config[software_analysis_dir]}/create_pythrotein_general_report.py --input {input.db_status} --output {output.pdf_report} --db {params.db_file}
         """
 
 # rule 8 reports pdf per experiment
@@ -152,19 +154,19 @@ rule r8_1_get_experiment_list:
         experiments_list=f"{config['data_dir']}/processed_data/experiments_list-{iso_date}.txt" 
     shell:
         """
-        get_experiment_list.py --input {input.db_status} --output {output.experiments_list}
+        python {config[software_analysis_dir]}/get_experiment_list.py --input {input.db_status} --output {output.experiments_list}
         """
 
 rule r8_2_generate_report_by_experiment:
     input: 
         experiments_list=f"{config['data_dir']}/processed_data/experiments_list-{iso_date}.txt"
     output:
-        touch(f"{config['report_dir']}/logs/rule8-experiment_pdf_reports.DONE")
+        f"{config['report_dir']}/logs/rule8-experiment_pdf_reports.DONE"
     params:
         pdf_reports_dir=config.get('pdf_individual_reports_dir', f"{config['report_dir']}/reports_by_experiment/exp_rep-{iso_date}")
     shell:
         """
         mkdir {params.pdf_reports_dir}
-        python create_pythrotein_report.py --outdir {params.pdf_reports_dir}
+        python {config[software_analysis_dir]}/create_pythrotein_report.py --outdir {params.pdf_reports_dir} --output_tt "{config[report_dir]}/logs/rule8-experiment_pdf_reports.{{RESULT}}
         """
 
