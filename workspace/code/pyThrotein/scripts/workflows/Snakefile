@@ -118,12 +118,15 @@ rule r6_check_db:
         status_files=expand(f"{config['data_dir']}/processed_data/logs/status_db_load-{{method}}.DONE", method=config['purification_methods'])
     output:
         check_result_ok=f"{config['data_dir']}/processed_data/logs/test_db.OK"
+    params:
+        methods=",".join(config['purification_methods']),
+        data_dir=config['data_dir']
     shell:
         """
         # Add your check logic here
         echo "Checking the database..."
         # Add any necessary commands to check the database
-        check_db.py --tables config['purification_methods'] --output_tt f"{config['data_dir']}/processed_data/logs/test_db.{{RESULT}}"
+        check_db.py --tables "{params.methods}" --output_tt "{params.data_dir}/processed_data/logs/test_db.{{RESULT}}"
         """
 # rule 7 gathered_analysis_report
 rule r7_1_gathered_analysis_report:
